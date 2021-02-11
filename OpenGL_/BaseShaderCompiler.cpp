@@ -5,7 +5,7 @@
 namespace SHB {
 	BaseShaderCompiler::BaseShaderCompiler(std::string sourcePath, int shaderType) :
 		_sourceShaderPath(sourcePath),
-		_resShaderID(0u),
+		_resShaderID(std::numeric_limits<uint32_t>::max()),
 		_shaderType(shaderType),
 		_shaderSource(nullptr),
 		_isLoaded(false)
@@ -24,10 +24,12 @@ namespace SHB {
 			out += "INCORRECT::SHADER::TYPE";
 			return false;
 		}
-		_resShaderID = glCreateShader(_shaderType);
 		if (!_shaderSource || _shaderSource == "") {
 			out += GetShaderNameByType(_shaderType) + "::SHADER::PROGRAM::IS::EMPTY";
 			return false;
+		}
+		if (_resShaderID == std::numeric_limits<uint32_t>::max()) {
+			_resShaderID = glCreateShader(_shaderType);
 		}
 		glShaderSource(_resShaderID, 1, &_shaderSource, &_shaderSourceLength);
 		glCompileShader(_resShaderID);
@@ -60,6 +62,9 @@ namespace SHB {
 		in.close();
 		outData += '\0';
 		_shaderSourceLength = outData.length();
+		if (_shaderSource != nullptr) {
+			delete[]_shaderSource;
+		}
 		_shaderSource = new char[_shaderSourceLength];
 		for (size_t i = 0; i < outData.length(); ++i) {
 			_shaderSource[i] = outData.c_str()[i];

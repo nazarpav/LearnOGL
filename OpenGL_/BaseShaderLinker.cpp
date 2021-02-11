@@ -14,36 +14,37 @@ namespace SHB {
 		}
 	}
 	const bool BaseShaderLinker::LinkShader(const uint32_t v_Shader, const uint32_t f_Shader, std::string& out, const uint32_t g_Shader) {
-
-		unsigned int shaderProgram = glCreateProgram();
-		glAttachShader(shaderProgram, v_Shader);
-		if (g_Shader != std::numeric_limits<uint32_t>::max()) {
-			glAttachShader(shaderProgram, g_Shader);
+		if (_shaderProgramID == std::numeric_limits<uint32_t>::max()) {
+			_shaderProgramID = glCreateProgram();
 		}
-		glAttachShader(shaderProgram, f_Shader);
-		glLinkProgram(shaderProgram);
+		glAttachShader(_shaderProgramID, v_Shader);
+		if (g_Shader != std::numeric_limits<uint32_t>::max()) {
+			glAttachShader(_shaderProgramID, g_Shader);
+		}
+		glAttachShader(_shaderProgramID, f_Shader);
+		glLinkProgram(_shaderProgramID);
 		int success;
-		glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+		glGetProgramiv(_shaderProgramID, GL_LINK_STATUS, &success);
 		if (!success) {
-			glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &_outLogSize);
+			glGetProgramiv(_shaderProgramID, GL_INFO_LOG_LENGTH, &_outLogSize);
 			_outLog = new char[_outLogSize];
-			glGetProgramInfoLog(shaderProgram, _outLogSize, &_outLogSize, _outLog);
+			glGetProgramInfoLog(_shaderProgramID, _outLogSize, &_outLogSize, _outLog);
 			out += "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" + std::string(_outLog);
 			delete[]_outLog;
-			glDeleteProgram(shaderProgram);
+			glDeleteProgram(_shaderProgramID);
 			glDeleteShader(v_Shader);
 			if (g_Shader != std::numeric_limits<uint32_t>::max()) {
 				glDeleteShader(g_Shader);
 			}
 			glDeleteShader(f_Shader);
 			return false;
-		}
-		glDetachShader(shaderProgram,v_Shader);
+		}/*
+		glDetachShader(_shaderProgramID,v_Shader);
 		if (g_Shader != std::numeric_limits<uint32_t>::max()) {
-			glDetachShader(shaderProgram, g_Shader);
+			glDetachShader(_shaderProgramID, g_Shader);
 		}
-		glDetachShader(shaderProgram, f_Shader);
-		_shaderProgramID = shaderProgram;
+		glDetachShader(_shaderProgramID, f_Shader);*/
+		_shaderProgramID = _shaderProgramID;
 		_isLastProgramCorrectlyLinked = true;
 		return true;
 	}

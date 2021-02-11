@@ -8,6 +8,7 @@ namespace app {
 	public:
 		void Start();
 	private:
+		SHB::BaseShaderHandler* handler;
 		static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 		void ProcessInput(GLFWwindow* window);
 	};

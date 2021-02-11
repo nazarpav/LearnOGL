@@ -1,5 +1,6 @@
 #include "Application.h"
 #include<iostream>
+#include<chrono>
 namespace app {
 	void Application::Start()
 	{
@@ -23,7 +24,7 @@ namespace app {
 		}
 		glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 		glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
-		SHB::BaseShaderHandler handler("shader.vert","shader.frag");
+		handler = new SHB::BaseShaderHandler("shader.vert", "shader.frag");
 		/*if (!S_Compiler.IsShaderLoaded()) {
 			glfwTerminate();
 			return;
@@ -49,8 +50,14 @@ namespace app {
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
-			if (handler.IsCrashed() == false) {
-				glUseProgram(handler.GetShaderProgramId());
+			if (handler->IsCrashed() == false) {
+				glUseProgram(handler->GetShaderProgramId());
+				/*double xpos, ypos;
+				glfwGetCursorPos(win, &xpos, &ypos);
+				GLint time = glGetUniformLocation(handler->GetShaderProgramId(), "time");
+				GLint mousePos = glGetUniformLocation(handler->GetShaderProgramId(), "mousePos");
+				glUniform1d(time, glfwGetTime());*/
+				//glUniform2d(mousePos, xpos, ypos);
 			}
 			glBindVertexArray(VAO);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -60,6 +67,7 @@ namespace app {
 		}
 		glDeleteVertexArrays(1, &VAO);
 		glDeleteBuffers(1, &VBO);
+		delete handler;
 		glfwTerminate();
 	}
 	void Application::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -71,6 +79,8 @@ namespace app {
 	{
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(window, true);
+		}if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS) {
 		}
+		handler->Reload();
 	}
 }

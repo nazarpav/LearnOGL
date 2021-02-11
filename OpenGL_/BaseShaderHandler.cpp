@@ -30,7 +30,7 @@ namespace SHB {
 		}
 		linker = std::make_unique <BaseShaderLinker>();
 		uint32_t v_ID = v_compiler->GetShaderID(out);
-		uint32_t g_ID= std::numeric_limits<uint32_t>::max();
+		uint32_t g_ID = std::numeric_limits<uint32_t>::max();
 		if (g_compiler) {
 			g_ID = g_compiler->GetShaderID(out);
 		}
@@ -98,10 +98,47 @@ namespace SHB {
 		_isCrashed = false;
 		return true;
 	}
-	const bool BaseShaderHandler::Reload() const
+	const bool BaseShaderHandler::Reload()
 	{
-		throw(1);
-		return false;
+		if (!linker || !f_compiler || !v_compiler) {
+			return false;
+		}
+		std::string out;
+		if (!v_compiler->Reload_ShaderSource(out) ||
+			!v_compiler->ReloadShader(out) ||
+			!f_compiler->Reload_ShaderSource(out) ||
+			!f_compiler->ReloadShader(out)) {
+			LOG::Logger::LOG(out);
+			_isCrashed = true;
+			return false;
+		}
+		if (g_compiler) {
+			if (!g_compiler->Reload_ShaderSource(out) ||
+				!g_compiler->ReloadShader(out)) {
+				LOG::Logger::LOG(out);
+				_isCrashed = true;
+				return false;
+			}
+		}
+		uint32_t v_ID = v_compiler->GetShaderID(out);
+		uint32_t g_ID = 0u;
+		if (g_compiler) {
+			g_ID = g_compiler->GetShaderID(out);
+		}
+		uint32_t f_ID = f_compiler->GetShaderID(out);
+		if (v_ID == std::numeric_limits<uint32_t>::max() ||
+			f_ID == std::numeric_limits<uint32_t>::max() || (g_ID == std::numeric_limits<uint32_t>::max() && !g_compiler)) {
+			LOG::Logger::LOG(out);
+			_isCrashed = true;
+			return false;
+		}
+		if (!linker->LinkShader(v_ID, f_ID, out, g_ID)) {
+			LOG::Logger::LOG(out);
+			_isCrashed = true;
+			return false;
+		}
+		_isCrashed = false;
+		return true;
 	}
 	const bool BaseShaderHandler::IsActive() const
 	{

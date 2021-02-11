@@ -16,7 +16,7 @@ namespace SHB {
 		BaseShaderHandler(std::string v_shader_source, std::string f_shader_source, std::string g_shader_source = "");
 		const uint32_t GetShaderProgramId() const;
 		const bool ReInit(std::string v_shader_source, std::string f_shader_source, std::string g_shader_source = "");
-		const bool Reload()const;
+		const bool Reload();
 		const bool IsActive()const;
 		const bool IsCrashed()const;
 		void SetActive(bool isActive);
