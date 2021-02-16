@@ -7,6 +7,10 @@ namespace SHB {
 		_shaderProgramID(std::numeric_limits<uint32_t>::max())
 	{
 	}
+	BaseShaderLinker::~BaseShaderLinker()
+	{
+		DeleteShaderProgram();
+	}
 	void BaseShaderLinker::DeleteShaderProgram() {
 		if (_shaderProgramID != std::numeric_limits<uint32_t>::max()) {
 			glDeleteProgram(_shaderProgramID);

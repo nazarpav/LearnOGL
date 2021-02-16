@@ -8,6 +8,7 @@ namespace SHB {
 		bool _isLastProgramCorrectlyLinked;
 	public:
 		BaseShaderLinker();
+		~BaseShaderLinker();
 		void DeleteShaderProgram();
 		const bool LinkShader(const uint32_t v_Shader, const uint32_t f_Shader, std::string& out, const uint32_t g_Shader = std::numeric_limits<uint32_t>::max());
 		const uint32_t GetLastShaderProgramID()const;
